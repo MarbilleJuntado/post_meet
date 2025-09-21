@@ -1,0 +1,480 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900"><%= @meeting.title %></h1>
+          <p class="mt-2 text-gray-600">
+            <%= Calendar.strftime(@meeting.start_time, "%B %d, %Y at %I:%M %p") %>
+          </p>
+        </div>
+        <a href="/dashboard" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
+          ← Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Meeting Details -->
+      <div class="space-y-6">
+        <div class="bg-white shadow rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-6">Meeting Details</h2>
+          <div class="space-y-5">
+            <div>
+              <label class="text-sm font-medium text-gray-500 mb-1 block">Platform</label>
+              <p class="text-sm text-gray-900 flex items-center">
+                <span class="text-2xl mr-2"><%= PostMeet.Calendar.Meeting.platform_icon(@meeting) %></span>
+                <%= String.capitalize(@meeting.platform || "Unknown") %>
+              </p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-500 mb-1 block">Status</label>
+              <p class="text-sm">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <%= String.capitalize(@meeting.recall_status) %>
+                </span>
+              </p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-500 mb-1 block">Attendees</label>
+              <div class="text-sm text-gray-900">
+                <%= if PostMeet.Calendar.Meeting.format_attendees(@meeting) != "No attendees" do %>
+                  <div class="space-y-1">
+                    <%= for attendee_line <- String.split(PostMeet.Calendar.Meeting.format_attendees_detailed(@meeting), "\n") do %>
+                      <div class="flex items-center">
+                        <%= attendee_line %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <p class="text-gray-500">No attendees</p>
+                <% end %>
+              </div>
+            </div>
+            <%= if @meeting.meeting_url do %>
+              <div>
+                <label class="text-sm font-medium text-gray-500 mb-1 block">Meeting Link</label>
+                <p class="text-sm">
+                  <a href={@meeting.meeting_url} target="_blank" class="text-blue-600 hover:text-blue-500">
+                    Join Meeting →
+                  </a>
+                </p>
+              </div>
+            <% end %>
+            <%= if @meeting.recording_url do %>
+              <div>
+                <label class="text-sm font-medium text-gray-500 mb-1 block">Recording</label>
+                <p class="text-sm">
+                  <a href={@meeting.recording_url} target="_blank" class="text-green-600 hover:text-green-500 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                    </svg>
+                    Watch Recording
+                  </a>
+                </p>
+              </div>
+            <% end %>
+            <%= if @meeting.description do %>
+              <div>
+                <label class="text-sm font-medium text-gray-500 mb-1 block">Description</label>
+                <p class="text-sm text-gray-900"><%= @meeting.description %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Transcript -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Transcript</h2>
+          <%= if @meeting.transcript do %>
+            <div class="prose max-w-none">
+              <p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed"><%= @meeting.transcript %></p>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500">No transcript available yet.</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="space-y-6">
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-6">Actions</h3>
+          <div class="space-y-4">
+            <%= if @meeting.transcript do %>
+              <.form for={%{}} as={:meeting} action={~p"/meetings/#{@meeting.id}/generate_social_post"} method="post" class="w-full">
+                <button type="submit" class="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  Generate Social Media Post
+                </button>
+              </.form>
+              <.form for={%{}} as={:meeting} action={~p"/meetings/#{@meeting.id}/generate_follow_up_email"} method="post" class="w-full">
+                <button type="submit" class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                  Generate Follow-up Email
+                </button>
+              </.form>
+            <% else %>
+              <button disabled class="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400 cursor-not-allowed">
+                Generate Social Media Post (No transcript)
+              </button>
+              <button disabled class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed">
+                Generate Follow-up Email (No transcript)
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-medium text-gray-900">Generated Content</h3>
+          </div>
+          <%= if @generated_content && length(@generated_content) > 0 do %>
+            <div class="space-y-4">
+              <%= for content <- @generated_content do %>
+                <div class="border border-gray-200 rounded-lg p-4">
+                  <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                      <span class={"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{case content.platform do
+                        "linkedin" -> "bg-blue-100 text-blue-800"
+                        "email" -> "bg-green-100 text-green-800"
+                        _ -> "bg-gray-100 text-gray-800"
+                      end}"}>
+                        <%= String.capitalize(content.platform) %>
+                      </span>
+                      <span class={"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{case content.status do
+                        "draft" -> "bg-yellow-100 text-yellow-800"
+                        "posted" -> "bg-green-100 text-green-800"
+                        "failed" -> "bg-red-100 text-red-800"
+                      end}"}>
+                        <%= String.capitalize(content.status) %>
+                      </span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                      <%= if content.status == "draft" && content.platform != "email" do %>
+                        <.form for={%{}} as={:content} action={~p"/meetings/#{@meeting.id}/content/#{content.id}/post"} method="post" class="inline">
+                          <button type="submit" class="text-green-600 hover:text-green-500 text-sm font-medium">
+                            Post
+                          </button>
+                        </.form>
+                      <% end %>
+                      <button class="text-gray-600 hover:text-gray-500 text-sm font-medium content-view-btn" 
+                              data-content-id={content.id}
+                              data-content-text={content.content}
+                              data-content-platform={content.platform}
+                              data-content-type={content.content_type}>
+                        View
+                      </button>
+                      <.form for={%{}} as={:content} action={~p"/meetings/#{@meeting.id}/content/#{content.id}"} method="delete" class="inline"
+                               onsubmit="return confirm('Are you sure you want to delete this content?')">
+                        <button type="submit" class="text-red-600 hover:text-red-500 text-sm font-medium">
+                          Delete
+                        </button>
+                      </.form>
+                    </div>
+                  </div>
+                  <div class="text-sm text-gray-700">
+                    <p class="font-medium mb-2"><%= String.capitalize(String.replace(content.content_type, "_", " ")) %></p>
+                    <p class="text-gray-600 leading-relaxed"><%= String.slice(content.content, 0, 150) %><%= if String.length(content.content) > 150, do: "..." %></p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500">No content generated yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Content Modal -->
+<div id="content-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Draft post</h3>
+          <p class="text-sm text-gray-600">Generate a post based on insights from this meeting.</p>
+        </div>
+        <button id="close-modal" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="mb-6">
+        <div class="bg-gray-50 rounded-lg p-4 border">
+          <div id="modal-content-text" class="text-gray-900 whitespace-pre-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between">
+        <div class="flex space-x-3">
+          <button id="copy-content" class="flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copy
+          </button>
+          
+          <button id="share-content" class="flex items-center px-4 py-2 border border-blue-300 rounded-md text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 hidden">
+            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            </svg>
+            Share
+          </button>
+          
+          <button id="email-content" class="flex items-center px-4 py-2 border border-green-300 rounded-md text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 hidden">
+            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Email
+          </button>
+        </div>
+        
+        <div class="flex space-x-3">
+          <button id="cancel-modal" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Cancel
+          </button>
+          <button id="save-content" class="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div id="share-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <!-- Share Modal Header -->
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Share to Social Media</h3>
+          <p class="text-sm text-gray-600">Choose where to share your content</p>
+        </div>
+        <button id="close-share-modal" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Share Options -->
+      <div class="space-y-4">
+        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer" id="share-linkedin">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-900">LinkedIn</h4>
+              <p class="text-sm text-gray-500">Share to your LinkedIn profile</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer" id="share-facebook">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-900">Facebook</h4>
+              <p class="text-sm text-gray-500">Share to your Facebook profile</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Share Modal Footer -->
+      <div class="flex justify-end mt-6">
+        <button id="cancel-share" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('content-modal');
+  const shareModal = document.getElementById('share-modal');
+  const closeModal = document.getElementById('close-modal');
+  const cancelModal = document.getElementById('cancel-modal');
+  const copyContent = document.getElementById('copy-content');
+  const shareContent = document.getElementById('share-content');
+  const emailContent = document.getElementById('email-content');
+  const saveContent = document.getElementById('save-content');
+  const modalContentText = document.getElementById('modal-content-text');
+  
+  // Share modal elements
+  const closeShareModal = document.getElementById('close-share-modal');
+  const cancelShare = document.getElementById('cancel-share');
+  const shareLinkedIn = document.getElementById('share-linkedin');
+  const shareFacebook = document.getElementById('share-facebook');
+
+  // Store current content data for sharing
+  let currentContentData = {};
+
+  // Open modal when content view button is clicked
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('content-view-btn')) {
+      const contentText = e.target.getAttribute('data-content-text');
+      const contentId = e.target.getAttribute('data-content-id');
+      const contentPlatform = e.target.getAttribute('data-content-platform');
+      const contentType = e.target.getAttribute('data-content-type');
+      
+      modalContentText.textContent = contentText;
+      currentContentData = {
+        id: contentId,
+        text: contentText,
+        platform: contentPlatform,
+        type: contentType
+      };
+      
+      // Show appropriate button based on content type
+      if (contentPlatform === 'email') {
+        shareContent.classList.add('hidden');
+        emailContent.classList.remove('hidden');
+      } else {
+        shareContent.classList.remove('hidden');
+        emailContent.classList.add('hidden');
+      }
+      
+      modal.classList.remove('hidden');
+    }
+  });
+
+  // Close modal functions
+  function closeModalFunc() {
+    modal.classList.add('hidden');
+  }
+
+  closeModal.addEventListener('click', closeModalFunc);
+  cancelModal.addEventListener('click', closeModalFunc);
+
+  // Share button click handler
+  shareContent.addEventListener('click', function() {
+    shareModal.classList.remove('hidden');
+  });
+
+  // Email button click handler
+  emailContent.addEventListener('click', function() {
+    if (currentContentData.text) {
+      // Create mailto link with the email content
+      const subject = encodeURIComponent('Follow-up from our meeting');
+      const body = encodeURIComponent(currentContentData.text);
+      const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+      
+      // Open the default email client
+      window.location.href = mailtoLink;
+    }
+  });
+
+  // Share modal close functions
+  function closeShareModalFunc() {
+    shareModal.classList.add('hidden');
+  }
+
+  closeShareModal.addEventListener('click', closeShareModalFunc);
+  cancelShare.addEventListener('click', closeShareModalFunc);
+
+  // LinkedIn share handler
+  shareLinkedIn.addEventListener('click', function() {
+    if (currentContentData.id) {
+      // Create a form to submit POST request to the post endpoint
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/meetings/${window.location.pathname.split('/')[2]}/content/${currentContentData.id}/post`;
+      
+      // Add CSRF token
+      const csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (csrfToken) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf_token';
+        csrfInput.value = csrfToken.getAttribute('content');
+        form.appendChild(csrfInput);
+      }
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+  });
+
+  // Facebook share handler
+  shareFacebook.addEventListener('click', function() {
+    if (currentContentData.id) {
+      // Create a form to submit POST request to the post endpoint for Facebook
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/meetings/${window.location.pathname.split('/')[2]}/content/${currentContentData.id}/post`;
+      
+      // Add platform parameter to indicate Facebook
+      const platformInput = document.createElement('input');
+      platformInput.type = 'hidden';
+      platformInput.name = 'platform';
+      platformInput.value = 'facebook';
+      form.appendChild(platformInput);
+      
+      // Add CSRF token
+      const csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (csrfToken) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf_token';
+        csrfInput.value = csrfToken.getAttribute('content');
+        form.appendChild(csrfInput);
+      }
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+  });
+
+  // Copy content to clipboard
+  copyContent.addEventListener('click', function() {
+    navigator.clipboard.writeText(modalContentText.textContent).then(function() {
+      // Show success feedback
+      const originalText = copyContent.innerHTML;
+      copyContent.innerHTML = '<svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Copied!';
+      setTimeout(() => {
+        copyContent.innerHTML = originalText;
+      }, 2000);
+    });
+  });
+
+  // Save content (placeholder)
+  saveContent.addEventListener('click', function() {
+    // In a real implementation, this would save the content
+    alert('Content saved!');
+    closeModalFunc();
+  });
+
+  // Close modal when clicking outside
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeModalFunc();
+    }
+  });
+
+  // Close share modal when clicking outside
+  shareModal.addEventListener('click', function(e) {
+    if (e.target === shareModal) {
+      closeShareModalFunc();
+    }
+  });
+});
+</script>

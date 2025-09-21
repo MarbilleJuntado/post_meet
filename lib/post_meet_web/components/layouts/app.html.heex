@@ -1,0 +1,35 @@
+<header class="px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
+    <div class="flex items-center gap-4">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-sm">PM</span>
+        </div>
+        <span class="font-semibold text-gray-900">Post Meet</span>
+      </a>
+    </div>
+    <%= if @current_user do %>
+      <nav class="flex items-center gap-6">
+        <a href={~p"/dashboard"} class="text-sm font-medium text-gray-700 hover:text-gray-900">Dashboard</a>
+        <a href={~p"/automation"} class="text-sm font-medium text-gray-700 hover:text-gray-900">Automation</a>
+        <a href={~p"/social-accounts"} class="text-sm font-medium text-gray-700 hover:text-gray-900">Social Accounts</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-600">Welcome, <%= @current_user.name %></span>
+        <form action={~p"/auth/logout"} method="post" class="inline">
+          <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+          <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            Logout
+          </button>
+        </form>
+      </div>
+    <% end %>
+  </div>
+</header>
+<main class="px-4 py-8 sm:px-6 lg:px-8">
+  <.flash_group flash={@flash} />
+  {@inner_content}
+</main>

@@ -1,0 +1,105 @@
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Create New Automation</h1>
+    <p class="mt-2 text-gray-600">Set up automated content generation from your meetings</p>
+  </div>
+
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <.form for={@changeset} action={~p"/automation"} method="post" class="space-y-6">
+        <div>
+          <label for="automation_name" class="block text-sm font-medium text-gray-700">
+            Automation Name
+          </label>
+          <div class="mt-1">
+            <input type="text" name="automation[name]" id="automation_name" 
+                   value={@changeset.changes.name || ""}
+                   class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" 
+                   placeholder="e.g., LinkedIn Post Generator" />
+          </div>
+          <%= if @changeset.errors[:name] do %>
+            <p class="mt-2 text-sm text-red-600"><%= hd(@changeset.errors[:name]) %></p>
+          <% end %>
+        </div>
+
+        <div>
+          <label for="automation_platform" class="block text-sm font-medium text-gray-700">
+            Platform
+          </label>
+          <div class="mt-1">
+            <select name="automation[platform]" id="automation_platform" 
+                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+              <option value="">Select a platform</option>
+              <option value="linkedin" selected={@changeset.changes.platform == "linkedin"}>LinkedIn</option>
+              <option value="facebook" selected={@changeset.changes.platform == "facebook"}>Facebook</option>
+              <option value="email" selected={@changeset.changes.platform == "email"}>Email</option>
+            </select>
+          </div>
+          <%= if @changeset.errors[:platform] do %>
+            <p class="mt-2 text-sm text-red-600"><%= hd(@changeset.errors[:platform]) %></p>
+          <% end %>
+        </div>
+
+        <div>
+          <label for="automation_type" class="block text-sm font-medium text-gray-700">
+            Content Type
+          </label>
+          <div class="mt-1">
+            <select name="automation[type]" id="automation_type" 
+                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+              <option value="">Select content type</option>
+              <option value="generate_post" selected={@changeset.changes.type == "generate_post"}>Social Media Post</option>
+              <option value="generate_email" selected={@changeset.changes.type == "generate_email"}>Follow-up Email</option>
+            </select>
+          </div>
+          <%= if @changeset.errors[:type] do %>
+            <p class="mt-2 text-sm text-red-600"><%= hd(@changeset.errors[:type]) %></p>
+          <% end %>
+        </div>
+
+        <div>
+          <label for="automation_description" class="block text-sm font-medium text-gray-700">
+            Description & Tone
+          </label>
+          <div class="mt-1">
+            <textarea name="automation[description]" id="automation_description" rows="3"
+                      class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Describe the tone and style for generated content (e.g., 'Professional and engaging, focus on key insights')"><%= @changeset.changes.description || "" %></textarea>
+          </div>
+          <%= if @changeset.errors[:description] do %>
+            <p class="mt-2 text-sm text-red-600"><%= hd(@changeset.errors[:description]) %></p>
+          <% end %>
+        </div>
+
+        <div>
+          <label for="automation_example" class="block text-sm font-medium text-gray-700">
+            Example Content (Optional)
+          </label>
+          <div class="mt-1">
+            <textarea name="automation[example]" id="automation_example" rows="3"
+                      class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Provide an example of the type of content you want generated"><%= @changeset.changes.example || "" %></textarea>
+          </div>
+          <p class="mt-2 text-sm text-gray-500">This helps the AI understand your preferred style and format.</p>
+        </div>
+
+        <div class="flex items-center">
+          <input type="checkbox" name="automation[is_active]" id="automation_is_active" value="true" checked
+                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+          <label for="automation_is_active" class="ml-2 block text-sm text-gray-900">
+            Activate this automation immediately
+          </label>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <a href="/automation" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Cancel
+          </a>
+          <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Create Automation
+          </button>
+        </div>
+      </.form>
+    </div>
+  </div>
+</div>

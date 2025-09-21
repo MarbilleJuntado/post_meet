@@ -1,0 +1,204 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-7xl mx-auto py-8">
+    <div class="mb-8">
+      <div class="px-6">
+        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p class="mt-2 text-gray-600">Manage your meetings and social media content</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Meetings List -->
+      <div class="lg:col-span-2">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Upcoming Meetings</h2>
+          </div>
+          <div class="divide-y divide-gray-200">
+            <%= if Enum.empty?(@upcoming_meetings) do %>
+              <div class="px-6 py-8 text-center">
+                <div class="text-gray-400 mb-4">
+                  <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No upcoming meetings</h3>
+                <p class="text-gray-500">Your calendar events will appear here.</p>
+              </div>
+            <% else %>
+              <%= for meeting <- @upcoming_meetings do %>
+                <div class="px-6 py-4 hover:bg-gray-50">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="flex-shrink-0">
+                        <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100">
+                          <%= raw(PostMeet.Calendar.Meeting.platform_logo(meeting)) %>
+                        </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <h3 class="text-sm font-medium text-gray-900 truncate"><%= meeting.title %></h3>
+                        <p class="text-sm text-gray-500">
+                          <span class="meeting-time" data-utc-time={meeting.start_time}>
+                            <%= Calendar.strftime(meeting.start_time, "%B %d, %Y at %I:%M %p") %>
+                          </span>
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                          <%= PostMeet.Calendar.Meeting.format_attendees(meeting) %>
+                        </p>
+                        <%= if meeting.meeting_url do %>
+                          <p class="text-xs text-blue-600 mt-1 flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                            </svg>
+                            <%= String.upcase(meeting.platform) %> Meeting
+                          </p>
+                        <% end %>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <form action={~p"/meetings/#{meeting.id}/toggle_notetaker"} method="post" class="inline">
+                        <input type="hidden" name="_method" value="patch" />
+                        <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+                        <label class="inline-flex items-center cursor-pointer">
+                          <input type="checkbox" 
+                                 class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                                 checked={meeting.notetaker_enabled}
+                                 onchange="this.form.submit()"
+                                 name="notetaker_enabled"
+                                 value="true">
+                          <span class="ml-2 text-sm text-gray-600">Notetaker</span>
+                        </label>
+                      </form>
+                      <a href={~p"/meetings/#{meeting.id}"} class="text-blue-600 hover:text-blue-500 text-sm font-medium">
+                        View
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Past Meetings -->
+        <div class="bg-white shadow rounded-lg mt-6">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Recent Meetings</h2>
+          </div>
+          <div class="divide-y divide-gray-200">
+            <%= if Enum.empty?(@past_meetings) do %>
+              <div class="px-6 py-4 text-center text-gray-500">
+                <p>No recent meetings</p>
+              </div>
+            <% else %>
+              <%= for meeting <- Enum.take(@past_meetings, 5) do %>
+                <div class="px-6 py-4 hover:bg-gray-50">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="flex-shrink-0">
+                        <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100">
+                          <%= raw(PostMeet.Calendar.Meeting.platform_logo(meeting)) %>
+                        </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <h3 class="text-sm font-medium text-gray-900 truncate"><%= meeting.title %></h3>
+                        <p class="text-sm text-gray-500">
+                          <span class="meeting-time" data-utc-time={meeting.start_time}>
+                            <%= Calendar.strftime(meeting.start_time, "%B %d, %Y at %I:%M %p") %>
+                          </span>
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                          <%= PostMeet.Calendar.Meeting.format_attendees(meeting) %>
+                        </p>
+                        <%= if meeting.recording_url do %>
+                          <p class="text-xs text-green-600 mt-1 flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                            </svg>
+                            Recording Available
+                          </p>
+                        <% end %>
+                        <%= if meeting.transcript do %>
+                          <p class="text-xs text-blue-600 mt-1 flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                            </svg>
+                            Transcript Available
+                          </p>
+                        <% end %>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <%= meeting.recall_status %>
+                      </span>
+                      <a href={~p"/meetings/#{meeting.id}"} class="text-blue-600 hover:text-blue-500 text-sm font-medium">
+                        View
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="space-y-6">
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+          <div class="space-y-3">
+            <a href="/dashboard" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+              Sync Calendar
+            </a>
+            <a href="/settings" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              Settings
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Social Media</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-600">LinkedIn</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                Not Connected
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-600">Facebook</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                Not Connected
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Convert UTC times to local timezone
+  document.addEventListener('DOMContentLoaded', function() {
+    const timeElements = document.querySelectorAll('.meeting-time');
+    
+    timeElements.forEach(function(element) {
+      const utcTime = element.getAttribute('data-utc-time');
+      if (utcTime) {
+        const date = new Date(utcTime);
+        const localTime = date.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        element.textContent = localTime;
+      }
+    });
+  });
+</script>
