@@ -30,7 +30,7 @@ defmodule PostMeet.Calendar.GoogleCalendarService do
     headers = [
       {"Authorization", "Bearer #{access_token}"},
       {"Content-Type", "application/json"}
-    ]ify
+    ]
 
     case HTTPoison.get(url, headers, params: params) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
