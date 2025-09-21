@@ -85,7 +85,7 @@ config :phoenix_live_view,
 config :swoosh, :api_client, false
 
 # Set default Recall.ai API key for development
-config :post_meet, :recall_ai_api_key, System.get_env("RECALL_AI_API_KEY", "your_recall_ai_api_key_here")
+config :post_meet, :recall_ai_api_key, System.get_env("RECALL_AI_API_KEY")
 
 # Social Media API Configuration
 config :post_meet,
