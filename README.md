@@ -47,15 +47,15 @@ cd assets && npm install && cd ..
 ### 3. Set Up Environment Variables
 
 ```bash
-# Run the setup script to configure environment variables
-source setup_env.sh
+# Copy the example environment file
+cp env.example .env
 
-# Or manually set them:
-export RECALL_AI_API_KEY="your_recall_ai_api_key"
-export LINKEDIN_CLIENT_ID="your_linkedin_client_id"
-export LINKEDIN_CLIENT_SECRET="your_linkedin_client_secret"
-export FACEBOOK_APP_ID="your_facebook_app_id"
-export FACEBOOK_APP_SECRET="your_facebook_app_secret"
+# Edit .env with your actual API keys
+# Then source the environment variables
+source .env
+
+# Or run the setup script (after setting your environment variables)
+source setup_env.sh
 ```
 
 ### 4. Set Up Database

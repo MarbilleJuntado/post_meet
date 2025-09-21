@@ -69,8 +69,8 @@ config :ueberauth, Ueberauth,
   ]
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-  client_id: "245104452415-h5k68dp9qvudq9jk1216deom3d2b0rn4.apps.googleusercontent.com",
-  client_secret: "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"
+  client_id: System.get_env("GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
 
 # Configure Oban for background jobs
 config :post_meet, Oban,

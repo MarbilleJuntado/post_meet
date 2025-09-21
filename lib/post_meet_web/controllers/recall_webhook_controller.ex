@@ -25,7 +25,3 @@ defmodule PostMeetWeb.RecallWebhookController do
     end
   end
 end
-
-
-
-
