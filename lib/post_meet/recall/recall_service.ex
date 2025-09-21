@@ -400,7 +400,7 @@ defmodule PostMeet.Recall.RecallService do
 
   defp get_api_key do
     System.get_env("RECALL_AI_API_KEY") ||
-      Application.get_env(:post_meet, :recall_ai_api_key) ||
+      Application.compile_env(:post_meet, :recall_ai_api_key) ||
       raise "RECALL_AI_API_KEY environment variable not set"
   end
 end
