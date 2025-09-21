@@ -3,9 +3,6 @@ defmodule PostMeetWeb.FacebookAuthController do
 
   alias PostMeet.SocialMedia
 
-  @facebook_app_id Application.get_env(:post_meet, :facebook_app_id, nil)
-  @facebook_app_secret Application.get_env(:post_meet, :facebook_app_secret, nil)
-  @facebook_redirect_uri Application.get_env(:post_meet, :facebook_redirect_uri, "https://post-meet.fly.dev/auth/facebook/callback")
 
   def authorize(conn, _params) do
     # Check if user is authenticated
@@ -94,9 +91,12 @@ defmodule PostMeetWeb.FacebookAuthController do
   defp redirect_to_facebook_oauth(conn) do
     state = :crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)
 
+    facebook_app_id = Application.get_env(:post_meet, :facebook_app_id, nil)
+    facebook_redirect_uri = Application.get_env(:post_meet, :facebook_redirect_uri, "https://post-meet.fly.dev/auth/facebook/callback")
+
     params = %{
-      client_id: @facebook_app_id,
-      redirect_uri: @facebook_redirect_uri,
+      client_id: facebook_app_id,
+      redirect_uri: facebook_redirect_uri,
       state: state,
       scope: "email,public_profile,pages_manage_posts,pages_read_engagement",
       response_type: "code"
@@ -110,10 +110,14 @@ defmodule PostMeetWeb.FacebookAuthController do
   defp exchange_code_for_token(code) do
     token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
 
+    facebook_app_id = Application.get_env(:post_meet, :facebook_app_id, nil)
+    facebook_app_secret = Application.get_env(:post_meet, :facebook_app_secret, nil)
+    facebook_redirect_uri = Application.get_env(:post_meet, :facebook_redirect_uri, "https://post-meet.fly.dev/auth/facebook/callback")
+
     params = %{
-      client_id: @facebook_app_id,
-      client_secret: @facebook_app_secret,
-      redirect_uri: @facebook_redirect_uri,
+      client_id: facebook_app_id,
+      client_secret: facebook_app_secret,
+      redirect_uri: facebook_redirect_uri,
       code: code
     }
 

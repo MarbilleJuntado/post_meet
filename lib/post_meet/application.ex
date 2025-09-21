@@ -5,8 +5,6 @@ defmodule PostMeet.Application do
 
   use Application
 
-  @oban_config Application.get_env(:post_meet, Oban)
-
   @impl true
   def start(_type, _args) do
     children = [
@@ -17,7 +15,7 @@ defmodule PostMeet.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: PostMeet.Finch},
       # Start Oban for background jobs
-      {Oban, @oban_config},
+      {Oban, Application.get_env(:post_meet, Oban)},
       # Start the bot scheduler
       PostMeet.Recall.BotScheduler,
       # Start the transcript processor

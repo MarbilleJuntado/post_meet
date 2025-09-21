@@ -123,5 +123,7 @@ if config_env() == :prod do
     facebook_app_id: System.get_env("FACEBOOK_APP_ID"),
     facebook_app_secret: System.get_env("FACEBOOK_APP_SECRET"),
     facebook_redirect_uri: System.get_env("FACEBOOK_REDIRECT_URI"),
-    recall_ai_api_key: System.get_env("RECALL_AI_API_KEY")
+    recall_ai_api_key: System.get_env("RECALL_AI_API_KEY"),
+    google_client_id: System.get_env("GOOGLE_CLIENT_ID"),
+    google_client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
 end

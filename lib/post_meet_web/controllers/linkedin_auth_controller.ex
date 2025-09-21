@@ -3,13 +3,9 @@ defmodule PostMeetWeb.LinkedInAuthController do
 
   alias PostMeet.SocialMedia
 
-  @linkedin_client_id Application.get_env(:post_meet, :linkedin_client_id)
-  @linkedin_client_secret Application.get_env(:post_meet, :linkedin_client_secret)
-  @linkedin_redirect_uri Application.get_env(:post_meet, :linkedin_redirect_uri)
-
-  defp linkedin_client_id, do: @linkedin_client_id
-  defp linkedin_client_secret, do: @linkedin_client_secret
-  defp linkedin_redirect_uri, do: @linkedin_redirect_uri
+  defp linkedin_client_id, do: Application.get_env(:post_meet, :linkedin_client_id)
+  defp linkedin_client_secret, do: Application.get_env(:post_meet, :linkedin_client_secret)
+  defp linkedin_redirect_uri, do: Application.get_env(:post_meet, :linkedin_redirect_uri)
 
   def authorize(conn, _params) do
     # Check if user is authenticated

@@ -3,11 +3,9 @@ defmodule PostMeetWeb.AuthController do
 
   alias PostMeet.Accounts
 
-  @google_client_id Application.get_env(:post_meet, :google_client_id)
-
   def request(conn, _params) do
     # Redirect to Google OAuth
-    client_id = System.get_env("GOOGLE_CLIENT_ID") || @google_client_id
+    client_id = System.get_env("GOOGLE_CLIENT_ID") || Application.get_env(:post_meet, :google_client_id)
     oauth_url = "https://accounts.google.com/o/oauth2/v2/auth?" <>
       "client_id=#{client_id}&" <>
       "redirect_uri=https://post-meet.fly.dev/auth/google/callback&" <>

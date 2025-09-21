@@ -7,8 +7,6 @@ defmodule PostMeet.Calendar.GoogleCalendarService do
 
   @google_calendar_api_url "https://www.googleapis.com/calendar/v3"
   @google_oauth_token_url "https://oauth2.googleapis.com/token"
-  @client_id Application.get_env(:post_meet, :google_client_id, System.get_env("GOOGLE_CLIENT_ID"))
-  @client_secret Application.get_env(:post_meet, :google_client_secret, System.get_env("GOOGLE_CLIENT_SECRET"))
 
   @spec fetch_calendar_events(any(), any()) :: {:error, <<_::64, _::_*8>>} | {:ok, any()}
   @doc """
@@ -176,9 +174,15 @@ defmodule PostMeet.Calendar.GoogleCalendarService do
   def exchange_code_for_token(code) do
     url = "https://oauth2.googleapis.com/token"
 
+    client_id = Application.get_env(:post_meet, :google_client_id, System.get_env("GOOGLE_CLIENT_ID"))
+    client_secret = Application.get_env(:post_meet, :google_client_secret, System.get_env("GOOGLE_CLIENT_SECRET"))
+
+    Logger.info("Token exchange - Client ID: #{client_id}")
+    Logger.info("Token exchange - Redirect URI: https://post-meet.fly.dev/auth/google/callback")
+
     body = %{
-      "client_id" => @client_id,
-      "client_secret" => @client_secret,
+      "client_id" => client_id,
+      "client_secret" => client_secret,
       "code" => code,
       "grant_type" => "authorization_code",
       "redirect_uri" => "https://post-meet.fly.dev/auth/google/callback"
@@ -235,9 +239,12 @@ defmodule PostMeet.Calendar.GoogleCalendarService do
   Refreshes an expired access token using the refresh token.
   """
   def refresh_access_token(refresh_token) do
+    client_id = Application.get_env(:post_meet, :google_client_id, System.get_env("GOOGLE_CLIENT_ID"))
+    client_secret = Application.get_env(:post_meet, :google_client_secret, System.get_env("GOOGLE_CLIENT_SECRET"))
+
     body = %{
-      client_id: @client_id,
-      client_secret: @client_secret,
+      client_id: client_id,
+      client_secret: client_secret,
       refresh_token: refresh_token,
       grant_type: "refresh_token"
     }
