@@ -5,7 +5,6 @@ defmodule PostMeet.Application do
 
   use Application
 
-  @dns_cluster_query Application.compile_env(:post_meet, :dns_cluster_query, :ignore)
   @oban_config Application.compile_env(:post_meet, Oban)
 
   @impl true
@@ -13,7 +12,7 @@ defmodule PostMeet.Application do
     children = [
       PostMeetWeb.Telemetry,
       PostMeet.Repo,
-      {DNSCluster, query: @dns_cluster_query},
+      {DNSCluster, query: Application.get_env(:post_meet, :dns_cluster_query, :ignore)},
       {Phoenix.PubSub, name: PostMeet.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: PostMeet.Finch},
