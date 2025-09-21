@@ -5,17 +5,20 @@ defmodule PostMeet.Application do
 
   use Application
 
+  @dns_cluster_query Application.compile_env(:post_meet, :dns_cluster_query, :ignore)
+  @oban_config Application.compile_env(:post_meet, Oban)
+
   @impl true
   def start(_type, _args) do
     children = [
       PostMeetWeb.Telemetry,
       PostMeet.Repo,
-      {DNSCluster, query: Application.compile_env(:post_meet, :dns_cluster_query, :ignore)},
+      {DNSCluster, query: @dns_cluster_query},
       {Phoenix.PubSub, name: PostMeet.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: PostMeet.Finch},
       # Start Oban for background jobs
-      {Oban, Application.compile_env(:post_meet, Oban)},
+      {Oban, @oban_config},
       # Start the bot scheduler
       PostMeet.Recall.BotScheduler,
       # Start the transcript processor
