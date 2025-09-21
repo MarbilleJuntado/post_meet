@@ -181,7 +181,7 @@ defmodule PostMeet.Calendar.GoogleCalendarService do
       "client_secret" => @client_secret,
       "code" => code,
       "grant_type" => "authorization_code",
-      "redirect_uri" => "http://localhost:4000/auth/google/callback"
+      "redirect_uri" => "https://post-meet.fly.dev/auth/google/callback"
     }
 
     headers = [{"Content-Type", "application/x-www-form-urlencoded"}]

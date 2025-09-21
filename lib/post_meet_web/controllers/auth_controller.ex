@@ -10,7 +10,7 @@ defmodule PostMeetWeb.AuthController do
     client_id = System.get_env("GOOGLE_CLIENT_ID") || @google_client_id
     oauth_url = "https://accounts.google.com/o/oauth2/v2/auth?" <>
       "client_id=#{client_id}&" <>
-      "redirect_uri=http://localhost:4000/auth/google/callback&" <>
+      "redirect_uri=https://post-meet.fly.dev/auth/google/callback&" <>
       "response_type=code&" <>
       "scope=openid%20email%20profile%20https://www.googleapis.com/auth/calendar.readonly&" <>
       "access_type=offline"
