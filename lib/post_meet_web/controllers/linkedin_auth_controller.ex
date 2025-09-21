@@ -3,9 +3,9 @@ defmodule PostMeetWeb.LinkedInAuthController do
 
   alias PostMeet.SocialMedia
 
-  @linkedin_client_id Application.compile_env(:post_meet, :linkedin_client_id)
-  @linkedin_client_secret Application.compile_env(:post_meet, :linkedin_client_secret)
-  @linkedin_redirect_uri Application.compile_env(:post_meet, :linkedin_redirect_uri)
+  @linkedin_client_id Application.get_env(:post_meet, :linkedin_client_id)
+  @linkedin_client_secret Application.get_env(:post_meet, :linkedin_client_secret)
+  @linkedin_redirect_uri Application.get_env(:post_meet, :linkedin_redirect_uri)
 
   defp linkedin_client_id, do: @linkedin_client_id
   defp linkedin_client_secret, do: @linkedin_client_secret

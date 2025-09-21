@@ -3,7 +3,7 @@ defmodule PostMeetWeb.AuthController do
 
   alias PostMeet.Accounts
 
-  @google_client_id Application.compile_env(:post_meet, :google_client_id)
+  @google_client_id Application.get_env(:post_meet, :google_client_id)
 
   def request(conn, _params) do
     # Redirect to Google OAuth

@@ -5,7 +5,7 @@ defmodule PostMeet.Application do
 
   use Application
 
-  @oban_config Application.compile_env(:post_meet, Oban)
+  @oban_config Application.get_env(:post_meet, Oban)
 
   @impl true
   def start(_type, _args) do

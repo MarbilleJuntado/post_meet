@@ -3,9 +3,9 @@ defmodule PostMeetWeb.FacebookAuthController do
 
   alias PostMeet.SocialMedia
 
-  @facebook_app_id Application.compile_env(:post_meet, :facebook_app_id, nil)
-  @facebook_app_secret Application.compile_env(:post_meet, :facebook_app_secret, nil)
-  @facebook_redirect_uri Application.compile_env(:post_meet, :facebook_redirect_uri, "http://localhost:4000/auth/facebook/callback")
+  @facebook_app_id Application.get_env(:post_meet, :facebook_app_id, nil)
+  @facebook_app_secret Application.get_env(:post_meet, :facebook_app_secret, nil)
+  @facebook_redirect_uri Application.get_env(:post_meet, :facebook_redirect_uri, "http://localhost:4000/auth/facebook/callback")
 
   def authorize(conn, _params) do
     # Check if user is authenticated

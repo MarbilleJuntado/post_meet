@@ -7,8 +7,8 @@ defmodule PostMeet.Calendar.GoogleCalendarService do
 
   @google_calendar_api_url "https://www.googleapis.com/calendar/v3"
   @google_oauth_token_url "https://oauth2.googleapis.com/token"
-  @client_id Application.compile_env(:post_meet, :google_client_id, System.get_env("GOOGLE_CLIENT_ID"))
-  @client_secret Application.compile_env(:post_meet, :google_client_secret, System.get_env("GOOGLE_CLIENT_SECRET"))
+  @client_id Application.get_env(:post_meet, :google_client_id, System.get_env("GOOGLE_CLIENT_ID"))
+  @client_secret Application.get_env(:post_meet, :google_client_secret, System.get_env("GOOGLE_CLIENT_SECRET"))
 
   @spec fetch_calendar_events(any(), any()) :: {:error, <<_::64, _::_*8>>} | {:ok, any()}
   @doc """
